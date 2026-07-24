@@ -10,6 +10,7 @@ import (
 
 	"github.com/gogpu/gputypes"
 	"github.com/gogpu/wgpu/hal"
+	"github.com/gogpu/wgpu/internal/indirect"
 )
 
 // CommandEncoder implements hal.CommandEncoder for Metal.
@@ -42,9 +43,9 @@ func (e *CommandEncoder) BeginEncoding(label string) error {
 	// This prevents LIFO violations when pools from different frames overlap
 	// on the ObjC autorelease pool stack (macOS Tahoe SIGABRT fix).
 	pool := NewAutoreleasePool()
+	defer pool.Drain()
 	e.cmdBuffer = MsgSend(e.device.commandQueue, Sel("commandBuffer"))
 	if e.cmdBuffer == 0 {
-		pool.Drain()
 		return fmt.Errorf("metal: failed to create command buffer")
 	}
 	Retain(e.cmdBuffer)
@@ -53,7 +54,6 @@ func (e *CommandEncoder) BeginEncoding(label string) error {
 		_ = MsgSend(e.cmdBuffer, Sel("setLabel:"), uintptr(nsLabel))
 		Release(nsLabel)
 	}
-	pool.Drain()
 	hal.Logger().Debug("metal: encoding started", "label", label)
 	return nil
 }
@@ -150,6 +150,11 @@ func (e *CommandEncoder) CopyBufferToTexture(src hal.Buffer, dst hal.Texture, re
 	if !ok || dstTex == nil {
 		return
 	}
+	for _, region := range regions {
+		if _, _, ok := validateMetalBufferTextureCopyPlan(dstTex.format, dstTex.dimension, region.BufferLayout, region.TextureBase.Origin, region.Size); !ok {
+			return
+		}
+	}
 	pool := NewAutoreleasePool()
 	defer pool.Drain()
 	blitEncoder := MsgSend(e.cmdBuffer, Sel("blitCommandEncoder"))
@@ -157,21 +162,23 @@ func (e *CommandEncoder) CopyBufferToTexture(src hal.Buffer, dst hal.Texture, re
 		return
 	}
 	for _, region := range regions {
-		sourceSize := MTLSize{Width: NSUInteger(region.Size.Width), Height: NSUInteger(region.Size.Height), Depth: NSUInteger(region.Size.DepthOrArrayLayers)}
-		destOrigin := MTLOrigin{X: NSUInteger(region.TextureBase.Origin.X), Y: NSUInteger(region.TextureBase.Origin.Y), Z: NSUInteger(region.TextureBase.Origin.Z)}
-		bytesPerRow := region.BufferLayout.BytesPerRow
-		bytesPerImage := region.BufferLayout.RowsPerImage * bytesPerRow
-		msgSendVoid(blitEncoder, Sel("copyFromBuffer:sourceOffset:sourceBytesPerRow:sourceBytesPerImage:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:"),
-			argPointer(uintptr(srcBuf.raw)),
-			argUint64(region.BufferLayout.Offset),
-			argUint64(uint64(bytesPerRow)),
-			argUint64(uint64(bytesPerImage)),
-			argStruct(sourceSize, mtlSizeType),
-			argPointer(uintptr(dstTex.raw)),
-			argUint64(uint64(region.TextureBase.Origin.Z)),
-			argUint64(uint64(region.TextureBase.MipLevel)),
-			argStruct(destOrigin, mtlOriginType),
-		)
+		plan, bytesPerImage, _ := validateMetalBufferTextureCopyPlan(dstTex.format, dstTex.dimension, region.BufferLayout, region.TextureBase.Origin, region.Size)
+		strides := metalBlitStrides(dstTex.dimension, uint64(region.BufferLayout.BytesPerRow), bytesPerImage)
+		for operation := uint32(0); operation < plan.operationCount; operation++ {
+			destination, _ := plan.textureRegion(dstTex.dimension, region.TextureBase.Origin, region.Size, operation)
+			sourceOffset, _ := plan.bufferOffset(region.BufferLayout.Offset, bytesPerImage, operation)
+			msgSendVoid(blitEncoder, Sel("copyFromBuffer:sourceOffset:sourceBytesPerRow:sourceBytesPerImage:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:"),
+				argPointer(uintptr(srcBuf.raw)),
+				argUint64(sourceOffset),
+				argUint64(strides.bytesPerRow),
+				argUint64(strides.bytesPerImage),
+				argStruct(destination.size, mtlSizeType),
+				argPointer(uintptr(dstTex.raw)),
+				argUint64(uint64(destination.slice)),
+				argUint64(uint64(region.TextureBase.MipLevel)),
+				argStruct(destination.origin, mtlOriginType),
+			)
+		}
 	}
 	_ = MsgSend(blitEncoder, Sel("endEncoding"))
 }
@@ -189,6 +196,11 @@ func (e *CommandEncoder) CopyTextureToBuffer(src hal.Texture, dst hal.Buffer, re
 	if !ok || dstBuf == nil {
 		return
 	}
+	for _, region := range regions {
+		if _, _, ok := validateMetalBufferTextureCopyPlan(srcTex.format, srcTex.dimension, region.BufferLayout, region.TextureBase.Origin, region.Size); !ok {
+			return
+		}
+	}
 	pool := NewAutoreleasePool()
 	defer pool.Drain()
 	blitEncoder := MsgSend(e.cmdBuffer, Sel("blitCommandEncoder"))
@@ -196,21 +208,23 @@ func (e *CommandEncoder) CopyTextureToBuffer(src hal.Texture, dst hal.Buffer, re
 		return
 	}
 	for _, region := range regions {
-		sourceSize := MTLSize{Width: NSUInteger(region.Size.Width), Height: NSUInteger(region.Size.Height), Depth: NSUInteger(region.Size.DepthOrArrayLayers)}
-		sourceOrigin := MTLOrigin{X: NSUInteger(region.TextureBase.Origin.X), Y: NSUInteger(region.TextureBase.Origin.Y), Z: NSUInteger(region.TextureBase.Origin.Z)}
-		bytesPerRow := region.BufferLayout.BytesPerRow
-		bytesPerImage := region.BufferLayout.RowsPerImage * bytesPerRow
-		msgSendVoid(blitEncoder, Sel("copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toBuffer:destinationOffset:destinationBytesPerRow:destinationBytesPerImage:"),
-			argPointer(uintptr(srcTex.raw)),
-			argUint64(uint64(region.TextureBase.Origin.Z)),
-			argUint64(uint64(region.TextureBase.MipLevel)),
-			argStruct(sourceOrigin, mtlOriginType),
-			argStruct(sourceSize, mtlSizeType),
-			argPointer(uintptr(dstBuf.raw)),
-			argUint64(region.BufferLayout.Offset),
-			argUint64(uint64(bytesPerRow)),
-			argUint64(uint64(bytesPerImage)),
-		)
+		plan, bytesPerImage, _ := validateMetalBufferTextureCopyPlan(srcTex.format, srcTex.dimension, region.BufferLayout, region.TextureBase.Origin, region.Size)
+		strides := metalBlitStrides(srcTex.dimension, uint64(region.BufferLayout.BytesPerRow), bytesPerImage)
+		for operation := uint32(0); operation < plan.operationCount; operation++ {
+			source, _ := plan.textureRegion(srcTex.dimension, region.TextureBase.Origin, region.Size, operation)
+			destinationOffset, _ := plan.bufferOffset(region.BufferLayout.Offset, bytesPerImage, operation)
+			msgSendVoid(blitEncoder, Sel("copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toBuffer:destinationOffset:destinationBytesPerRow:destinationBytesPerImage:"),
+				argPointer(uintptr(srcTex.raw)),
+				argUint64(uint64(source.slice)),
+				argUint64(uint64(region.TextureBase.MipLevel)),
+				argStruct(source.origin, mtlOriginType),
+				argStruct(source.size, mtlSizeType),
+				argPointer(uintptr(dstBuf.raw)),
+				argUint64(destinationOffset),
+				argUint64(strides.bytesPerRow),
+				argUint64(strides.bytesPerImage),
+			)
+		}
 	}
 	_ = MsgSend(blitEncoder, Sel("endEncoding"))
 }
@@ -228,6 +242,11 @@ func (e *CommandEncoder) CopyTextureToTexture(src, dst hal.Texture, regions []ha
 	if !ok || dstTex == nil {
 		return
 	}
+	for _, region := range regions {
+		if _, ok := validateMetalTextureCopyPlan(srcTex.dimension, dstTex.dimension, region.SrcBase.Origin, region.DstBase.Origin, region.Size); !ok {
+			return
+		}
+	}
 	pool := NewAutoreleasePool()
 	defer pool.Drain()
 	blitEncoder := MsgSend(e.cmdBuffer, Sel("blitCommandEncoder"))
@@ -235,20 +254,22 @@ func (e *CommandEncoder) CopyTextureToTexture(src, dst hal.Texture, regions []ha
 		return
 	}
 	for _, region := range regions {
-		sourceSize := MTLSize{Width: NSUInteger(region.Size.Width), Height: NSUInteger(region.Size.Height), Depth: NSUInteger(region.Size.DepthOrArrayLayers)}
-		sourceOrigin := MTLOrigin{X: NSUInteger(region.SrcBase.Origin.X), Y: NSUInteger(region.SrcBase.Origin.Y), Z: NSUInteger(region.SrcBase.Origin.Z)}
-		destOrigin := MTLOrigin{X: NSUInteger(region.DstBase.Origin.X), Y: NSUInteger(region.DstBase.Origin.Y), Z: NSUInteger(region.DstBase.Origin.Z)}
-		msgSendVoid(blitEncoder, Sel("copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:"),
-			argPointer(uintptr(srcTex.raw)),
-			argUint64(uint64(region.SrcBase.Origin.Z)),
-			argUint64(uint64(region.SrcBase.MipLevel)),
-			argStruct(sourceOrigin, mtlOriginType),
-			argStruct(sourceSize, mtlSizeType),
-			argPointer(uintptr(dstTex.raw)),
-			argUint64(uint64(region.DstBase.Origin.Z)),
-			argUint64(uint64(region.DstBase.MipLevel)),
-			argStruct(destOrigin, mtlOriginType),
-		)
+		plan, _ := validateMetalTextureCopyPlan(srcTex.dimension, dstTex.dimension, region.SrcBase.Origin, region.DstBase.Origin, region.Size)
+		for operation := uint32(0); operation < plan.operationCount; operation++ {
+			source, _ := plan.textureRegion(srcTex.dimension, region.SrcBase.Origin, region.Size, operation)
+			destination, _ := plan.textureRegion(dstTex.dimension, region.DstBase.Origin, region.Size, operation)
+			msgSendVoid(blitEncoder, Sel("copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:"),
+				argPointer(uintptr(srcTex.raw)),
+				argUint64(uint64(source.slice)),
+				argUint64(uint64(region.SrcBase.MipLevel)),
+				argStruct(source.origin, mtlOriginType),
+				argStruct(source.size, mtlSizeType),
+				argPointer(uintptr(dstTex.raw)),
+				argUint64(uint64(destination.slice)),
+				argUint64(uint64(region.DstBase.MipLevel)),
+				argStruct(destination.origin, mtlOriginType),
+			)
+		}
 	}
 	_ = MsgSend(blitEncoder, Sel("endEncoding"))
 }
@@ -268,9 +289,9 @@ func (e *CommandEncoder) BeginRenderPass(desc *hal.RenderPassDescriptor) hal.Ren
 	// Scoped pool: rpDesc and other autoreleased objects are only needed during
 	// encoder creation. The encoder itself is Retained to survive pool drain.
 	pool := NewAutoreleasePool()
+	defer pool.Drain()
 	rpDesc := MsgSend(ID(GetClass("MTLRenderPassDescriptor")), Sel("renderPassDescriptor"))
 	if rpDesc == 0 {
-		pool.Drain()
 		return nil
 	}
 	colorAttachments := MsgSend(rpDesc, Sel("colorAttachments"))
@@ -337,11 +358,9 @@ func (e *CommandEncoder) BeginRenderPass(desc *hal.RenderPassDescriptor) hal.Ren
 	}
 	encoder := MsgSend(e.cmdBuffer, Sel("renderCommandEncoderWithDescriptor:"), uintptr(rpDesc))
 	if encoder == 0 {
-		pool.Drain()
 		return nil
 	}
 	Retain(encoder)
-	pool.Drain() // drain now — encoder is Retained, rpDesc no longer needed
 	return &RenderPassEncoder{raw: encoder, device: e.device}
 }
 
@@ -353,9 +372,9 @@ func (e *CommandEncoder) BeginComputePass(desc *hal.ComputePassDescriptor) hal.C
 	}
 	// Scoped pool: encoder is Retained to survive pool drain.
 	pool := NewAutoreleasePool()
+	defer pool.Drain()
 	encoder := MsgSend(e.cmdBuffer, Sel("computeCommandEncoder"))
 	if encoder == 0 {
-		pool.Drain()
 		return nil
 	}
 	Retain(encoder)
@@ -364,7 +383,6 @@ func (e *CommandEncoder) BeginComputePass(desc *hal.ComputePassDescriptor) hal.C
 		_ = MsgSend(encoder, Sel("setLabel:"), uintptr(nsLabel))
 		Release(nsLabel)
 	}
-	pool.Drain()
 	return &ComputePassEncoder{raw: encoder, device: e.device}
 }
 
@@ -592,24 +610,51 @@ func (e *RenderPassEncoder) DrawIndexed(indexCount, instanceCount, firstIndex ui
 }
 
 // DrawIndirect draws primitives with GPU-generated parameters.
-func (e *RenderPassEncoder) DrawIndirect(buffer hal.Buffer, offset uint64) {
+func (e *RenderPassEncoder) DrawIndirect(buffer hal.Buffer, offset uint64, drawCount uint32) {
 	buf, ok := buffer.(*Buffer)
-	if !ok || buf == nil {
+	if !ok || buf == nil || drawCount == 0 {
 		return
 	}
-	_ = MsgSend(e.raw, Sel("drawPrimitives:indirectBuffer:indirectBufferOffset:"),
-		uintptr(MTLPrimitiveTypeTriangle), uintptr(buf.raw), uintptr(offset))
+	if !indirect.RangeFits(buf.size, offset, 16, drawCount) {
+		return
+	}
+	if _, ok := indirect.RecordOffset(offset, 16, drawCount-1); !ok {
+		return
+	}
+	for i := uint32(0); i < drawCount; i++ {
+		recordOffset, _ := indirect.RecordOffset(offset, 16, i)
+		_ = MsgSend(e.raw, Sel("drawPrimitives:indirectBuffer:indirectBufferOffset:"),
+			uintptr(MTLPrimitiveTypeTriangle), uintptr(buf.raw), uintptr(recordOffset))
+	}
 }
 
 // DrawIndexedIndirect draws indexed primitives with GPU-generated parameters.
-func (e *RenderPassEncoder) DrawIndexedIndirect(buffer hal.Buffer, offset uint64) {
+// Metal exposes only the single-record indirect operation, so count is lowered
+// to consecutive 20-byte calls.
+func (e *RenderPassEncoder) DrawIndexedIndirect(buffer hal.Buffer, offset uint64, drawCount uint32) {
 	buf, ok := buffer.(*Buffer)
-	if !ok || buf == nil || e.indexBuffer == nil {
+	if !ok || buf == nil || e.indexBuffer == nil || drawCount == 0 {
+		return
+	}
+	if !indirect.RangeFits(buf.size, offset, 20, drawCount) {
+		return
+	}
+	if _, ok := indirect.RecordOffset(offset, 20, drawCount-1); !ok {
 		return
 	}
 	indexType := indexFormatToMTL(e.indexFormat)
-	_ = MsgSend(e.raw, Sel("drawIndexedPrimitives:indexType:indexBuffer:indexBufferOffset:indirectBuffer:indirectBufferOffset:"),
-		uintptr(MTLPrimitiveTypeTriangle), uintptr(indexType), uintptr(e.indexBuffer.raw), uintptr(e.indexOffset), uintptr(buf.raw), uintptr(offset))
+	for i := uint32(0); i < drawCount; i++ {
+		recordOffset, ok := indirect.RecordOffset(offset, 20, i)
+		if !ok {
+			return
+		}
+		_ = MsgSend(e.raw, Sel("drawIndexedPrimitives:indexType:indexBuffer:indexBufferOffset:indirectBuffer:indirectBufferOffset:"),
+			uintptr(MTLPrimitiveTypeTriangle), uintptr(indexType), uintptr(e.indexBuffer.raw), uintptr(e.indexOffset), uintptr(buf.raw), uintptr(recordOffset))
+	}
+}
+
+func indexedIndirectRecordOffset(offset uint64, index uint32) (uint64, bool) {
+	return indirect.RecordOffset(offset, 20, index)
 }
 
 // ExecuteBundle executes a pre-recorded render bundle.
