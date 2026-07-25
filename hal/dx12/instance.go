@@ -171,14 +171,17 @@ func (i *Instance) checkTearingSupport() {
 // CreateSurface creates a rendering surface from platform handles.
 // displayHandle is not used on Windows (can be 0).
 // windowHandle must be a valid HWND.
-func (i *Instance) CreateSurface(displayHandle, windowHandle uintptr) (hal.Surface, error) {
-	if windowHandle == 0 {
+func (i *Instance) CreateSurface(target hal.SurfaceTarget) (hal.Surface, error) {
+	if err := target.RequireKind(hal.SurfaceTargetWindowsHWND); err != nil {
+		return nil, fmt.Errorf("dx12: %w", err)
+	}
+	if target.WindowHandle == 0 {
 		return nil, fmt.Errorf("dx12: windowHandle (HWND) is required")
 	}
 
 	return &Surface{
 		instance: i,
-		hwnd:     windowHandle,
+		hwnd:     target.WindowHandle,
 	}, nil
 }
 
@@ -448,13 +451,14 @@ func (s *Surface) AcquireTexture(_ hal.Fence) (*hal.AcquiredSurfaceTexture, erro
 
 	// Create surface texture wrapper
 	surfaceTexture := &SurfaceTexture{
-		surface:   s,
-		index:     index,
-		resource:  bb.resource,
-		rtvHandle: bb.rtvHandle,
-		format:    s.halFormat,
-		width:     s.width,
-		height:    s.height,
+		surface:    s,
+		index:      index,
+		resource:   bb.resource,
+		stateOwner: bb.texture,
+		rtvHandle:  bb.rtvHandle,
+		format:     s.halFormat,
+		width:      s.width,
+		height:     s.height,
 		// Note: Suboptimal detection requires DXGI_STATUS_OCCLUDED/DXGI_ERROR_DEVICE_REMOVED checks.
 		suboptimal: false,
 	}

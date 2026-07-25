@@ -16,30 +16,65 @@ type Surface struct {
 	device   *Device
 	released bool
 
+	// targetSource is retained only for CreateSurfaceFromTarget.
+	targetSource SurfaceTarget
+
 	// Cached configuration for texture creation.
 	configFormat TextureFormat
 	configWidth  uint32
 	configHeight uint32
 }
 
-// CreateSurface creates a rendering surface from platform-specific handles.
-// On Rust backend, dispatches to the platform-appropriate creation method.
+// CreateSurface creates a rendering surface from legacy platform-specific
+// handles. New code should prefer CreateSurfaceFromTarget or
+// CreateSurfaceUnsafe so the target kind and ownership contract are explicit.
+// On Rust backend, it dispatches to the platform-appropriate creation method.
 // displayHandle and windowHandle are platform-specific:
 //   - Windows: displayHandle=HINSTANCE (can be 0), windowHandle=HWND
 //   - macOS: displayHandle=0, windowHandle=CAMetalLayer*
 //   - Linux/X11: displayHandle=Display*, windowHandle=Window
 //   - Linux/Wayland: displayHandle=wl_display*, windowHandle=wl_surface*
+//   - Android: displayHandle ignored, windowHandle=ANativeWindow*
 func (i *Instance) CreateSurface(displayHandle, windowHandle uintptr) (*Surface, error) {
+	return i.createSurface(surfaceTargetFromLegacyHandles(displayHandle, windowHandle), nil)
+}
+
+// CreateSurfaceFromTarget samples a provider once and retains it until the
+// surface is released.
+func (i *Instance) CreateSurfaceFromTarget(target SurfaceTarget) (*Surface, error) {
+	if i == nil || i.released {
+		return nil, ErrReleased
+	}
+	rawTarget, err := resolveSurfaceTarget(target)
+	if err != nil {
+		return nil, err
+	}
+	return i.createSurface(rawTarget, target)
+}
+
+// CreateSurfaceUnsafe creates a surface from raw platform handles without
+// retaining an ownership source.
+func (i *Instance) CreateSurfaceUnsafe(target SurfaceTargetUnsafe) (*Surface, error) {
+	if i == nil || i.released {
+		return nil, ErrReleased
+	}
+	if err := target.validate(); err != nil {
+		return nil, err
+	}
+	return i.createSurface(target, nil)
+}
+
+func (i *Instance) createSurface(target SurfaceTargetUnsafe, targetSource SurfaceTarget) (*Surface, error) {
 	if i.released {
 		return nil, ErrReleased
 	}
 
-	rs, err := createPlatformSurface(i.r, displayHandle, windowHandle)
+	rs, err := createPlatformSurfaceTarget(i.r, target)
 	if err != nil {
 		return nil, fmt.Errorf("wgpu: failed to create surface: %w", err)
 	}
 
-	return &Surface{r: rs}, nil
+	return &Surface{r: rs, targetSource: targetSource}, nil
 }
 
 // Configure configures the surface for presentation.
@@ -127,6 +162,18 @@ func (s *Surface) PresentWithDamage(st *SurfaceTexture, _ []image.Rectangle) err
 	return s.Present(st)
 }
 
+// ReadPixels is not supported by the Rust FFI backend.
+// Headless surface readback is a Pure-Go software-backend extension.
+func (s *Surface) ReadPixels() ([]byte, error) {
+	if s == nil || s.released {
+		return nil, ErrReleased
+	}
+	if s.device == nil {
+		return nil, fmt.Errorf("wgpu: surface not configured")
+	}
+	return nil, fmt.Errorf("wgpu: ReadPixels not supported on this backend")
+}
+
 // ActualExtent returns the configured surface dimensions.
 func (s *Surface) ActualExtent() (width, height uint32) {
 	if s.released {
@@ -155,6 +202,7 @@ func (s *Surface) Release() {
 	if s.r != nil {
 		s.r.Release()
 	}
+	s.targetSource = nil
 }
 
 // SurfaceTexture is a texture acquired from a surface for rendering.

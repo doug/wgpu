@@ -42,6 +42,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   immutable. Iterates all queue families — ahead of Rust wgpu which hardcodes
   `queue_family_index = 0`. Contributor: @besmpl (#267).
 
+- **Typed surface targets** — add retained-provider
+  `CreateSurfaceFromTarget` and explicit raw-handle `CreateSurfaceUnsafe`
+  paths modeled on Rust `wgpu` v29. The original two-`uintptr` method remains a
+  compatibility adapter across native, Rust, and browser implementations. The
+  native path creates one surface per successful enabled backend and qualifies
+  adapters against their matching backend surface, as Rust `wgpu` does.
+
+- **Android raw surface target** — route `ANativeWindow*` explicitly through
+  public, HAL, Vulkan, and Rust-tag surface creation without cgo or Activity/JNI
+  policy in WGPU.
+
+- **Headless software surface readback (non-standard)** — add the zero-sized
+  `HeadlessSurfaceTarget` and root `Surface.ReadPixels()` lifecycle. The Pure-Go
+  software backend now returns owned, tightly packed RGBA8 snapshots after
+  present/discard for both RGBA8 and BGRA8 configurations. Other backends fail
+  explicitly through the optional `hal.PixelReader` capability rather than
+  widening the mandatory HAL surface interface. (#256)
+
 ### Changed
 
 - **Counted indirect draws** — added `RenderPassEncoder.MultiDrawIndirect` and
