@@ -21,10 +21,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan"
-	"github.com/gogpu/wgpu/internal/thread"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan"
+	"github.com/doug/wgpu/internal/thread"
 )
 
 const (

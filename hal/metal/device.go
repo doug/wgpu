@@ -13,11 +13,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/naga"
-	"github.com/gogpu/naga/ir"
-	"github.com/gogpu/naga/msl"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/naga"
+	"github.com/doug/naga/ir"
+	"github.com/doug/naga/msl"
+	"github.com/doug/wgpu/hal"
 )
 
 // Vertex buffer indices are assigned from the end of the range and count down.

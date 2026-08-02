@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 func TestBufferUses_IsReadOnly(t *testing.T) {

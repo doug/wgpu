@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan"
+	"github.com/doug/wgpu/hal/vulkan/vk"
 )
 
 var (

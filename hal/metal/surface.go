@@ -8,8 +8,8 @@ package metal
 import (
 	"fmt"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
 )
 
 // Surface implements hal.Surface for Metal using CAMetalLayer.

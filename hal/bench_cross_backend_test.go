@@ -9,9 +9,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/noop"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/noop"
 )
 
 // benchHALSink prevents the compiler from optimizing away benchmark results.

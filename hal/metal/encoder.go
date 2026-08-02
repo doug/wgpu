@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/internal/indirect"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/internal/indirect"
 )
 
 // CommandEncoder implements hal.CommandEncoder for Metal.

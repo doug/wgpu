@@ -5,7 +5,7 @@ package core
 import (
 	"fmt"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // GetQueue retrieves queue data.

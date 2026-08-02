@@ -5,7 +5,7 @@ package hal
 import (
 	"sync"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 var (

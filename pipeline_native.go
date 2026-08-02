@@ -3,9 +3,9 @@
 package wgpu
 
 import (
-	"github.com/gogpu/naga/ir"
-	"github.com/gogpu/wgpu/core"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/naga/ir"
+	"github.com/doug/wgpu/core"
+	"github.com/doug/wgpu/hal"
 )
 
 // LateSizedBufferGroup holds the shader-required minimum buffer sizes for

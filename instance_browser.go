@@ -5,8 +5,8 @@ package wgpu
 import (
 	"syscall/js"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/internal/browser"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/internal/browser"
 )
 
 // InstanceDescriptor configures instance creation.

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gogpu/wgpu/core"
+	"github.com/doug/wgpu/core"
 )
 
 // RenderPassEncoder records draw commands within a render pass.

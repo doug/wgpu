@@ -8,8 +8,8 @@ package dx12
 import (
 	"fmt"
 
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/dx12/d3d12"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/dx12/d3d12"
 )
 
 // QuerySet implements hal.QuerySet for DirectX 12.

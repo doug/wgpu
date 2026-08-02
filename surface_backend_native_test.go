@@ -7,11 +7,11 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/core"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/noop"
-	"github.com/gogpu/wgpu/hal/software"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/core"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/noop"
+	"github.com/doug/wgpu/hal/software"
 )
 
 type surfaceCreateTestInstance struct {

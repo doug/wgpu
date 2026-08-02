@@ -8,7 +8,7 @@ package gles
 import (
 	"testing"
 
-	"github.com/gogpu/naga/glsl"
+	"github.com/doug/naga/glsl"
 )
 
 // =============================================================================

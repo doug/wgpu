@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gogpu/wgpu"
+	"github.com/doug/wgpu"
 )
 
 func TestCreateSurfaceUnsafeRejectsInvalidTargets(t *testing.T) {

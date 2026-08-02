@@ -5,7 +5,7 @@ package wgpu
 import (
 	"fmt"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 
 	rwgpu "github.com/go-webgpu/webgpu/wgpu"
 )

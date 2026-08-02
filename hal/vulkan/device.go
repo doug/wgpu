@@ -12,11 +12,11 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/naga"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan/memory"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
+	"github.com/doug/gputypes"
+	"github.com/doug/naga"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan/memory"
+	"github.com/doug/wgpu/hal/vulkan/vk"
 )
 
 // commandAllocator holds a recycled VkCommandPool.

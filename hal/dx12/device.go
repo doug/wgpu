@@ -15,14 +15,14 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/naga"
-	"github.com/gogpu/naga/dxil"
-	"github.com/gogpu/naga/hlsl"
-	"github.com/gogpu/naga/ir"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/dx12/d3d12"
-	"github.com/gogpu/wgpu/hal/dx12/d3dcompile"
+	"github.com/doug/gputypes"
+	"github.com/doug/naga"
+	"github.com/doug/naga/dxil"
+	"github.com/doug/naga/hlsl"
+	"github.com/doug/naga/ir"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/dx12/d3d12"
+	"github.com/doug/wgpu/hal/dx12/d3dcompile"
 	"golang.org/x/sys/windows"
 )
 

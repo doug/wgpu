@@ -8,10 +8,10 @@ import (
 	"image"
 	"log/slog"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/software/raster"
-	"github.com/gogpu/wgpu/hal/software/shader"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/software/raster"
+	"github.com/doug/wgpu/hal/software/shader"
 )
 
 // CommandEncoder implements hal.CommandEncoder for the software backend.

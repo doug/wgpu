@@ -8,7 +8,7 @@ import (
 	"math"
 	"syscall/js"
 
-	"github.com/gogpu/wgpu"
+	"github.com/doug/wgpu"
 )
 
 const computeShader = `

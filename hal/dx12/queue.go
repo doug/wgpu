@@ -12,10 +12,10 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/dx12/d3d12"
-	"github.com/gogpu/wgpu/hal/dx12/dxgi"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/dx12/d3d12"
+	"github.com/doug/wgpu/hal/dx12/dxgi"
 )
 
 // Queue implements hal.Queue for DirectX 12.

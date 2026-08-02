@@ -7,8 +7,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu"
 )
 
 // sampleShader renders a single full-screen triangle that samples a texture.

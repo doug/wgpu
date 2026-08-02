@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // TestAdapter_Open_NilGLCtxReturnsDescriptiveError verifies that calling

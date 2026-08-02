@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
 )
 
 // validTextureDesc returns a valid 2D texture descriptor for tests.

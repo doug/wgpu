@@ -3,7 +3,7 @@ package browser
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // TestCompositeAlphaModeToJS verifies all composite alpha mode mappings.

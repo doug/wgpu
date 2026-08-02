@@ -3,7 +3,7 @@ package wgpu
 import (
 	"unsafe"
 
-	"github.com/gogpu/gpucontext"
+	"github.com/doug/gpucontext"
 )
 
 // Handle conversion helpers — isolate unsafe.Pointer from consumers.

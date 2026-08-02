@@ -20,10 +20,10 @@ import (
 	"math/rand/v2"
 	"time"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu"
 
-	_ "github.com/gogpu/wgpu/hal/allbackends"
+	_ "github.com/doug/wgpu/hal/allbackends"
 )
 
 const numParticles = 1024

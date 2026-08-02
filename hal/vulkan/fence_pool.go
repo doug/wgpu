@@ -8,8 +8,8 @@ package vulkan
 import (
 	"fmt"
 
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan/vk"
 )
 
 // fencePool manages binary VkFences for Vulkan <1.2 where timeline semaphores

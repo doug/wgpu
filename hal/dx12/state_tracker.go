@@ -9,9 +9,9 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/dx12/d3d12"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/dx12/d3d12"
 )
 
 // subresourceState is the command-local state of one resource subresource.

@@ -7,7 +7,7 @@ import (
 	"image"
 	"syscall/js"
 
-	"github.com/gogpu/wgpu/internal/browser"
+	"github.com/doug/wgpu/internal/browser"
 )
 
 // Surface represents a platform rendering surface.

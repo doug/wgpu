@@ -2,7 +2,7 @@
 
 package wgpu
 
-import "github.com/gogpu/gputypes"
+import "github.com/doug/gputypes"
 
 // Extent3D is a 3D size.
 type Extent3D struct {

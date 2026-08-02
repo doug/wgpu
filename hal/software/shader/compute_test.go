@@ -7,7 +7,7 @@ import (
 	"math"
 	"testing"
 
-	naga "github.com/gogpu/naga"
+	naga "github.com/doug/naga"
 )
 
 // =============================================================================

@@ -3,7 +3,7 @@ package browser
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // TestTextureFormatToJS verifies every texture format maps to the correct WebGPU string.

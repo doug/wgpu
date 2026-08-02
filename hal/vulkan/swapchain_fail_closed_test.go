@@ -6,9 +6,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan/vk"
 )
 
 func validSwapchainConfig() *hal.SurfaceConfiguration {

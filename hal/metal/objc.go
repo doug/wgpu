@@ -14,7 +14,7 @@ import (
 
 	"github.com/go-webgpu/goffi/ffi"
 	"github.com/go-webgpu/goffi/types"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/wgpu/hal"
 )
 
 // Objective-C runtime library handle and function symbols.

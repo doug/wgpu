@@ -6,13 +6,13 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu"
 
 	// Import noop backend. The noop backend is intentionally ignored during real
 	// adapter enumeration; tests that require HAL integration use an explicitly
 	// registered real backend when one is available.
-	_ "github.com/gogpu/wgpu/hal/noop"
+	_ "github.com/doug/wgpu/hal/noop"
 )
 
 // --- helpers ---

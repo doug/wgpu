@@ -7,8 +7,8 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
 )
 
 // Instance represents a WebGPU instance for GPU discovery and initialization.

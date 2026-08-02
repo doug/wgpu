@@ -9,7 +9,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 func TestCommandEncoderRecordingErrorKeepsFirstFailure(t *testing.T) {

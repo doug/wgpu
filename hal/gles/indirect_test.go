@@ -5,8 +5,8 @@ package gles
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
 )
 
 func TestRenderPassEncoderCountedIndirectRemainsUnsupported(t *testing.T) {

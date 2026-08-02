@@ -8,8 +8,8 @@ package gles
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal/gles/gl"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal/gles/gl"
 )
 
 func TestMapFilterMode(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"image"
 	"unsafe"
 
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/wgpu/hal"
 )
 
 // Surface lifecycle errors.

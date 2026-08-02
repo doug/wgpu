@@ -10,8 +10,8 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/internal/indirect"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/internal/indirect"
 )
 
 const (

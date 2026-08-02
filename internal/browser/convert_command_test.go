@@ -3,7 +3,7 @@ package browser
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // TestLoadOpToJS verifies all load operation mappings.

@@ -114,7 +114,7 @@ func (c *Commands) LoadInstance(instance Instance) error {
 	// VK_EXT_debug_utils (instance extension — MUST use GetInstanceProcAddr).
 	// Loading via GetDeviceProcAddr bypasses the validation layer's handle
 	// wrapping on NVIDIA drivers, causing "Invalid VkDescriptorPool" errors.
-	// See: https://github.com/gogpu/gogpu/issues/98
+	// See: https://github.com/doug/gogpu/issues/98
 	c.setDebugUtilsObjectNameEXT = GetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT")
 	c.createDebugUtilsMessengerEXT = GetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")
 	c.destroyDebugUtilsMessengerEXT = GetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")

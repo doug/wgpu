@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan/vk"
 )
 
 // platformSurfaceExtensions returns every Linux WSI extension the backend can

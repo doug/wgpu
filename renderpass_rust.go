@@ -6,7 +6,7 @@ import (
 	"math"
 
 	rwgpu "github.com/go-webgpu/webgpu/wgpu"
-	"github.com/gogpu/wgpu/internal/indirect"
+	"github.com/doug/wgpu/internal/indirect"
 )
 
 // RenderPassEncoder records draw commands within a render pass.

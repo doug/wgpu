@@ -5,7 +5,7 @@ package wgpu
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 func TestBufferDescriptorToHAL(t *testing.T) {

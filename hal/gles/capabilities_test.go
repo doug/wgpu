@@ -8,7 +8,7 @@ package gles
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 func TestParseGLVersion(t *testing.T) {

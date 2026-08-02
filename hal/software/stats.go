@@ -3,7 +3,7 @@ package software
 import (
 	"image"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // RenderPassStats holds observable state from a completed software render pass.

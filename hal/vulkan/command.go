@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/vulkan/vk"
-	"github.com/gogpu/wgpu/internal/indirect"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/vulkan/vk"
+	"github.com/doug/wgpu/internal/indirect"
 )
 
 // CommandBuffer holds a recorded Vulkan command buffer.

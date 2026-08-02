@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // =============================================================================

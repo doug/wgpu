@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/wgpu/hal"
 )
 
 func TestIndexedICBArenaCapacityIsGeometricAndBounded(t *testing.T) {

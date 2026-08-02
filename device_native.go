@@ -7,11 +7,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gogpu/gputypes"
-	naga "github.com/gogpu/naga"
-	"github.com/gogpu/naga/ir"
-	"github.com/gogpu/wgpu/core"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	naga "github.com/doug/naga"
+	"github.com/doug/naga/ir"
+	"github.com/doug/wgpu/core"
+	"github.com/doug/wgpu/hal"
 )
 
 // Device represents a logical GPU device.

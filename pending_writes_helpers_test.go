@@ -8,7 +8,7 @@ package wgpu
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 func TestBufferReadUsage(t *testing.T) {

@@ -5,7 +5,7 @@
 
 package gles
 
-import "github.com/gogpu/gputypes"
+import "github.com/doug/gputypes"
 
 // Compatibility wrappers for Linux Surface which still owns its GL context
 // directly (Phase 1 = Windows only). These delegate to the *With() methods

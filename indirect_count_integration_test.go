@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu"
-	_ "github.com/gogpu/wgpu/hal/metal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu"
+	_ "github.com/doug/wgpu/hal/metal"
 )
 
 const countedIndexedShader = `

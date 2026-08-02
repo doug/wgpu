@@ -15,10 +15,10 @@ package gles
 import (
 	"strings"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/naga/glsl"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/gles/gl"
+	"github.com/doug/gputypes"
+	"github.com/doug/naga/glsl"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/gles/gl"
 )
 
 // AdapterCapabilities holds parsed adapter information queried from GL at

@@ -5,10 +5,10 @@ package wgpu
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/core"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/noop"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/core"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/noop"
 )
 
 // releaseTrackingDevice embeds a real HAL device and records only the two

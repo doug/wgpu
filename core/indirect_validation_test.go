@@ -5,7 +5,7 @@ package core
 import (
 	"testing"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // TestDispatchIndirectValidationWGSL verifies the shader source generation

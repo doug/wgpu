@@ -10,10 +10,10 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/naga/hlsl"
-	"github.com/gogpu/wgpu/hal"
-	"github.com/gogpu/wgpu/hal/dx12/d3d12"
+	"github.com/doug/gputypes"
+	"github.com/doug/naga/hlsl"
+	"github.com/doug/wgpu/hal"
+	"github.com/doug/wgpu/hal/dx12/d3d12"
 )
 
 // -----------------------------------------------------------------------------

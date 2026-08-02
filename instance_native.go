@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu/core"
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu/core"
+	"github.com/doug/wgpu/hal"
 )
 
 // InstanceDescriptor configures instance creation.

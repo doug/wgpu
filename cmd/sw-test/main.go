@@ -10,10 +10,10 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/gogpu/gputypes"
-	"github.com/gogpu/wgpu"
-	"github.com/gogpu/wgpu/hal"
-	_ "github.com/gogpu/wgpu/hal/software"
+	"github.com/doug/gputypes"
+	"github.com/doug/wgpu"
+	"github.com/doug/wgpu/hal"
+	_ "github.com/doug/wgpu/hal/software"
 )
 
 const wgslShader = `

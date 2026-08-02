@@ -5,7 +5,7 @@ package wgpu
 import (
 	"fmt"
 
-	"github.com/gogpu/wgpu/hal"
+	"github.com/doug/wgpu/hal"
 )
 
 // NewDeviceFromHAL is not supported with the Rust FFI backend.

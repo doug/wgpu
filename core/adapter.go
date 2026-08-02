@@ -5,7 +5,7 @@ package core
 import (
 	"fmt"
 
-	"github.com/gogpu/gputypes"
+	"github.com/doug/gputypes"
 )
 
 // GetAdapterInfo returns information about the specified adapter.
